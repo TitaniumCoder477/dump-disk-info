@@ -7,6 +7,9 @@ echo "This script is made available under the MIT License."
 echo "See https://opensource.org/license/mit for details."
 echo
 
+echo *** Please make sure to run this script as root or sudo! ***
+echo
+
 # Prep #########################################
 timestamp=$(date '+%Y%m%d_%H%M%S')
 file="/root/${timestamp}_info.txt"
@@ -14,8 +17,8 @@ file="/root/${timestamp}_info.txt"
 # Gather info ##################################
 
 echo "Attempting to get hostname..."
-if command -v "hostname" 2>&1 >/dev/null
-then
+hostname --version &> /dev/null
+if [ $? -eq 0 ]; then 
 	echo "# hostname #######################" &>> $file
 	hostname &>> $file 
 	echo &>> $file
@@ -24,8 +27,8 @@ else
 fi
 
 echo "Attempting to gather info from release files..."
-if command -v "cat" 2>&1 >/dev/null
-then 
+cat --version &> /dev/null
+if [ $? -eq 0 ]; then 
 	echo "# release files ##################" &>> $file
 	cat /etc/*elease &>> $file 
 	echo &>> $file
@@ -34,8 +37,8 @@ else
 fi
 
 echo "Attempting to gather info from hostnamectl..."
-if command -v "hostnamectl" 2>&1 >/dev/null
-then 
+hostnamectl --version &> /dev/null
+if [ $? -eq 0 ]; then 
 	echo "# hostnamectl ####################" &>> $file
 	hostnamectl &>> $file 
 	echo &>> $file
@@ -44,8 +47,8 @@ else
 fi
 
 echo "Attempting to gather info from lsb_release..."
-if command -v "lsb_release" 2>&1 >/dev/null
-then 
+lsb_release --version &> /dev/null
+if [ $? -eq 0 ]; then
 	echo "# lsb_release ####################" &>> $file
 	lsb_release -a &>> $file 
 	echo &>> $file
@@ -54,8 +57,8 @@ else
 fi
 
 echo "Attempting to gather info from fdisk..."
-if command -v "fdisk" 2>&1 >/dev/null
-then
+fdisk --version &> /dev/null
+if [ $? -eq 0 ]; then
 	echo "# fdisk ##########################" &>> $file
 	fdisk -l &>> $file 
 	echo &>> $file
@@ -64,13 +67,23 @@ else
 fi
 
 echo "Attempting to gather info from parted..."
-if command -v "parted" 2>&1 >/dev/null
-then
+parted --version &> /dev/null
+if [ $? -eq 0 ]; then
 	echo "# parted #########################" &>> $file
 	parted -l &>> $file 
 	echo &>> $file
 else
 	echo "parted command not found. Skipping..."
+fi
+
+echo "Attempting to gather info from df..."
+df --version &> /dev/null
+if [ $? -eq 0 ]; then
+	echo "# df #########################" &>> $file
+	df -lT &>> $file 
+	echo &>> $file
+else
+	echo "df command not found. Skipping..."
 fi
 
 
